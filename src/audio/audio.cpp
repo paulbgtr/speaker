@@ -1,6 +1,6 @@
 #include "audio.h"
 #include "../config.h"
-#include "Audio.h"
+#include <Audio.h>
 
 static Audio audio;
 static int currentStation = 0;
