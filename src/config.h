@@ -1,7 +1,5 @@
 #pragma once
-
-#define WIFI_SSID ""
-#define WIFI_PASSWORD ""
+#include "credentials.h"
 
 #define I2S_BCLK 5
 #define I2S_LRC 4
