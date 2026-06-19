@@ -8,4 +8,7 @@
 #define OLED_SDA 1
 #define OLED_SCL 2
 
+#define CONTROLS_PLAY 7
+#define CONTROLS_NEXT 3
+
 #define TIMEZONE 3
