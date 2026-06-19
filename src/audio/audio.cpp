@@ -9,13 +9,19 @@ static const char *urls[] = {
     "http://ice3.somafm.com/fluid-128-mp3",
     "http://ice1.somafm.com/groovesalad-128-mp3",
     "http://ice1.somafm.com/dronezone-128-mp3",
+    "http://ice1.somafm.com/indiepop-128-mp3",
+    "http://ice1.somafm.com/metal-128-mp3",
+    "http://ice1.somafm.com/dubstep-128-mp3"
 };
 static const char *names[] = {
     "Fluid",
     "Groove Salad",
     "Drone Zone",
+    "Indie Pop",
+    "Metal",
+    "Dubstep"
 };
-static const int totalStations = 3;
+static const int totalStations = sizeof(urls)/sizeof(urls[0]);
 static bool isPlaying = true;
 
 void audioToggle() {
