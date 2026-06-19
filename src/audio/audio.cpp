@@ -25,6 +25,15 @@ void audioInit(int stationIndex) {
   audio.connecttohost(urls[currentStation]);
 }
 
+void audioStop() {
+    audio.stopSong();
+}
+
+void audioResume() {
+    audio.setConnectionTimeout(500, 2700);
+    audio.connecttohost(urls[currentStation]);
+}
+
 void audioLoop() { audio.loop(); }
 
 void audioNextStation() {

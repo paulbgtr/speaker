@@ -26,7 +26,7 @@ void setup() {
 
   configTime(TIMEZONE * 3600, 0, "pool.ntp.org");
 
-  audioInit(0);
+  audioInit(2);
   displayShow(audioGetStationName().c_str(), currentTrack);
 }
 
