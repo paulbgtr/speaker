@@ -48,9 +48,4 @@ void audioNextStation() {
   audio.connecttohost(urls[currentStation]);
 }
 
-void audioPrevStation() {
-  currentStation = (currentStation - 1 + totalStations) % totalStations;
-  audio.connecttohost(urls[currentStation]);
-}
-
 String audioGetStationName() { return String(names[currentStation]); }
