@@ -16,6 +16,22 @@ static const char *names[] = {
     "Drone Zone",
 };
 static const int totalStations = 3;
+static bool isPlaying = true;
+
+void audioToggle() {
+    if (isPlaying) {
+        audio.stopSong();
+        isPlaying = false;
+    } else {
+        audio.setConnectionTimeout(500, 2700);
+        audio.connecttohost(urls[currentStation]);
+        isPlaying = true;
+    }
+}
+
+bool audioIsPlaying() {
+    return isPlaying;
+}
 
 void audioInit(int stationIndex) {
   currentStation = stationIndex;
@@ -23,15 +39,6 @@ void audioInit(int stationIndex) {
   audio.setVolume(15);
   audio.setConnectionTimeout(500, 2700);
   audio.connecttohost(urls[currentStation]);
-}
-
-void audioStop() {
-    audio.stopSong();
-}
-
-void audioResume() {
-    audio.setConnectionTimeout(500, 2700);
-    audio.connecttohost(urls[currentStation]);
 }
 
 void audioLoop() { audio.loop(); }
