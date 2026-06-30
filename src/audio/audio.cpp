@@ -5,39 +5,29 @@
 static Audio audio;
 static int currentStation = 0;
 
-static const char *urls[] = {
-    "http://ice3.somafm.com/fluid-128-mp3",
-    "http://ice1.somafm.com/groovesalad-128-mp3",
-    "http://ice1.somafm.com/dronezone-128-mp3",
-    "http://ice1.somafm.com/indiepop-128-mp3",
-    "http://ice1.somafm.com/metal-128-mp3",
-    "http://ice1.somafm.com/dubstep-128-mp3"
-};
-static const char *names[] = {
-    "Fluid",
-    "Groove Salad",
-    "Drone Zone",
-    "Indie Pop",
-    "Metal",
-    "Dubstep"
-};
-static const int totalStations = sizeof(urls)/sizeof(urls[0]);
+static const char *urls[] = {"http://ice3.somafm.com/fluid-128-mp3",
+                             "http://ice1.somafm.com/groovesalad-128-mp3",
+                             "http://ice1.somafm.com/dronezone-128-mp3",
+                             "http://ice1.somafm.com/indiepop-128-mp3",
+                             "http://ice1.somafm.com/metal-128-mp3",
+                             "http://ice1.somafm.com/dubstep-128-mp3"};
+static const char *names[] = {"Fluid",     "Groove Salad", "Drone Zone",
+                              "Indie Pop", "Metal",        "Dubstep"};
+static const int totalStations = sizeof(urls) / sizeof(urls[0]);
 static bool isPlaying = true;
 
 void audioToggle() {
-    if (isPlaying) {
-        audio.stopSong();
-        isPlaying = false;
-    } else {
-        audio.setConnectionTimeout(500, 2700);
-        audio.connecttohost(urls[currentStation]);
-        isPlaying = true;
-    }
+  if (isPlaying) {
+    audio.stopSong();
+    isPlaying = false;
+  } else {
+    audio.setConnectionTimeout(500, 2700);
+    audio.connecttohost(urls[currentStation]);
+    isPlaying = true;
+  }
 }
 
-bool audioIsPlaying() {
-    return isPlaying;
-}
+bool audioIsPlaying() { return isPlaying; }
 
 void audioInit(int stationIndex) {
   currentStation = stationIndex;
