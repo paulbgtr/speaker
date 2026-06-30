@@ -2,7 +2,7 @@
 #include "config.h"
 #include "display/display.h"
 #include <Arduino.h>
-#include <WiFi.h>
+#include <WiFiManager.h>
 
 static String currentTrack = "";
 
@@ -27,11 +27,19 @@ void setup() {
   pinMode(CONTROLS_NEXT, INPUT_PULLUP);
   displayInit();
 
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+  WiFiManager wifiManager;
+
+  wifiManager.setConfigPortalTimeout(180);
+
+  bool connected = wifiManager.autoConnect("LoFi-Speaker-Setup");
+
+  if (!connected) {
+      Serial.println("Failed to connect, restarting...");
+      ESP.restart();
   }
+
+  Serial.println("WiFi connected!");
+  Serial.println(WiFi.localIP());
 
   configTime(TIMEZONE * 3600, 0, "pool.ntp.org");
 
@@ -55,4 +63,6 @@ void loop() {
     audioNextStation();
     displayShow(audioGetStationName().c_str(), currentTrack);
   }
+
+  // Serial.println(ESP.getFreeHeap());
 }
