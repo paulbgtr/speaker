@@ -2,7 +2,9 @@
 #include "config.h"
 #include "display/display.h"
 #include <Arduino.h>
+#include <LittleFS.h>
 #include <WiFiManager.h>
+#include <ArduinoJson.h>
 
 static String currentTrack = "";
 
@@ -20,8 +22,42 @@ bool buttonPressed(int pin) {
   return false;
 }
 
+void loadStations() {
+  File file = LittleFS.open("/stations.json", "r");
+  if (!file) {
+    Serial.println("no file");
+    return;
+  }
+
+  JsonDocument doc;
+
+  DeserializationError error = deserializeJson(doc, file);
+  file.close();
+
+  if (error) {
+    Serial.print("JSON parse failed: ");
+    Serial.println(error.c_str());
+    return;
+  }
+
+  JsonArray stations = doc["stations"];
+  for (JsonObject station : stations) {
+    const char* name = station["name"];
+    const char* url  = station["url"];
+    Serial.printf("Station: %s -> %s\n", name, url);
+  }
+}
+
 void setup() {
   Serial.begin(115200);
+  delay(3000);
+  Serial.println("=== BOOT ===");
+
+  if (!LittleFS.begin(true)) {
+    Serial.println("LittleFS MOUNT FAILED!");
+    return;
+  }
+  loadStations();
 
   pinMode(CONTROLS_PLAY, INPUT_PULLUP);
   pinMode(CONTROLS_NEXT, INPUT_PULLUP);
@@ -34,8 +70,8 @@ void setup() {
   bool connected = wifiManager.autoConnect("LoFi-Speaker-Setup");
 
   if (!connected) {
-      Serial.println("Failed to connect, restarting...");
-      ESP.restart();
+    Serial.println("Failed to connect, restarting...");
+    ESP.restart();
   }
 
   Serial.println("WiFi connected!");
@@ -63,6 +99,4 @@ void loop() {
     audioNextStation();
     displayShow(audioGetStationName().c_str(), currentTrack);
   }
-
-  // Serial.println(ESP.getFreeHeap());
 }
