@@ -2,4 +2,4 @@
 #include <Arduino.h>
 
 void displayInit();
-void displayShow(const char *station, const String &track);
+void displayShow(const char *station);

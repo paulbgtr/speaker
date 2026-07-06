@@ -13,7 +13,7 @@ void displayInit() {
   display.display();
 }
 
-void displayShow(const char *station, const String &track) {
+void displayShow(const char *station) {
   display.clearDisplay();
 
   struct tm t;
@@ -37,7 +37,6 @@ void displayShow(const char *station, const String &track) {
   display.setCursor(0, 22);
   display.println(station);
   display.setCursor(0, 36);
-  display.println(track.substring(0, 21));
 
   display.display();
 }
