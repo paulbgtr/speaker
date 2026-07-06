@@ -1,0 +1,46 @@
+#include "StationManager.h"
+
+StationManager::StationManager() { currentIndex_ = 0; }
+
+bool StationManager::loadFromFile(const char *path) {
+  File file = LittleFS.open(path, "r");
+  if (!file) {
+    Serial.println("no file");
+    return false;
+  }
+
+  JsonDocument doc;
+
+  DeserializationError error = deserializeJson(doc, file);
+  file.close();
+
+  if (error) {
+    Serial.print("JSON parse failed: ");
+    Serial.println(error.c_str());
+    return false;
+  }
+
+  JsonArray stations = doc["stations"];
+  for (JsonObject station : stations) {
+    const char *name = station["name"];
+    const char *url = station["url"];
+
+    stations_.push_back({name, url});
+  }
+
+  return true;
+}
+
+void StationManager::next() {
+  if (stations_.empty())
+    return;
+
+  currentIndex_ = (currentIndex_ + 1) % stations_.size();
+}
+
+Station StationManager::current() {
+  if (stations_.size() <= 0)
+    return Station{};
+
+  return stations_[currentIndex_];
+}
