@@ -1,14 +1,15 @@
-#include "audio/audio.h"
+#include "HWCDC.h"
 #include "config.h"
 #include "display/display.h"
 #include <Arduino.h>
-#include <LittleFS.h>
-#include <WiFiManager.h>
 #include <ArduinoJson.h>
-#include <StationManager.h>
 #include <AudioPlayer.h>
+#include <LittleFS.h>
+#include <StationManager.h>
+#include <WiFiManager.h>
 
-static String currentTrack = "";
+StationManager stationManager = StationManager();
+AudioPlayer audioPlayer = AudioPlayer(I2S_BCLK, I2S_LRC, I2S_DIN);
 
 bool buttonPressed(int pin) {
   static unsigned long lastDebounce[40] = {0};
@@ -34,9 +35,6 @@ void setup() {
     return;
   }
 
-  StationManager stationManager = StationManager();
-  stationManager.loadFromFile("/stations.json");
-
   pinMode(CONTROLS_PLAY, INPUT_PULLUP);
   pinMode(CONTROLS_NEXT, INPUT_PULLUP);
   displayInit();
@@ -57,24 +55,27 @@ void setup() {
 
   configTime(TIMEZONE * 3600, 0, "pool.ntp.org");
 
-  audioInit(2);
-  displayShow(audioGetStationName().c_str(), currentTrack);
+  stationManager.loadFromFile("/stations.json");
+  audioPlayer.play(stationManager.current().url.c_str());
+
+  displayShow(stationManager.current().name.c_str());
 }
 
 void loop() {
-  audioLoop();
+  audioPlayer.loop();
 
   static unsigned long lastUpdate = 0;
   if (millis() - lastUpdate > 60000) {
     lastUpdate = millis();
-    displayShow(audioGetStationName().c_str(), currentTrack);
+    displayShow(stationManager.current().name.c_str());
   }
 
   if (buttonPressed(CONTROLS_PLAY))
-    audioToggle();
+    audioPlayer.toggleAudio();
 
   if (buttonPressed(CONTROLS_NEXT)) {
-    audioNextStation();
-    displayShow(audioGetStationName().c_str(), currentTrack);
+      stationManager.next();
+      audioPlayer.play(stationManager.current().url.c_str());
+      displayShow(stationManager.current().name.c_str());
   }
 }
