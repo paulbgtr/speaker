@@ -1,2 +1,6 @@
 .pio
 src/credentials.h
+.cache
+.zed
+.clangd
+compile_commands.json
