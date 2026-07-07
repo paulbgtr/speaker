@@ -1,15 +1,24 @@
 #include "HWCDC.h"
 #include "config.h"
-#include "display/display.h"
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <AudioPlayer.h>
+#include <Display.h>
 #include <LittleFS.h>
 #include <StationManager.h>
 #include <WiFiManager.h>
 
 StationManager stationManager = StationManager();
 AudioPlayer audioPlayer = AudioPlayer(I2S_BCLK, I2S_LRC, I2S_DIN);
+Display display = Display();
+
+void refreshDisplay() {
+  display.clear();
+  display.drawClock();
+  display.drawHorizontalLine();
+  display.drawStationInfo(stationManager.current().name.c_str());
+  display.flush();
+}
 
 bool buttonPressed(int pin) {
   static unsigned long lastDebounce[40] = {0};
@@ -37,7 +46,7 @@ void setup() {
 
   pinMode(CONTROLS_PLAY, INPUT_PULLUP);
   pinMode(CONTROLS_NEXT, INPUT_PULLUP);
-  displayInit();
+  display.init(OLED_SDA, OLED_SCL);
 
   WiFiManager wifiManager;
 
@@ -58,7 +67,7 @@ void setup() {
   stationManager.loadFromFile("/stations.json");
   audioPlayer.play(stationManager.current().url.c_str());
 
-  displayShow(stationManager.current().name.c_str());
+  refreshDisplay();
 }
 
 void loop() {
@@ -67,15 +76,17 @@ void loop() {
   static unsigned long lastUpdate = 0;
   if (millis() - lastUpdate > 60000) {
     lastUpdate = millis();
-    displayShow(stationManager.current().name.c_str());
+
+    refreshDisplay();
   }
 
   if (buttonPressed(CONTROLS_PLAY))
     audioPlayer.toggleAudio();
 
   if (buttonPressed(CONTROLS_NEXT)) {
-      stationManager.next();
-      audioPlayer.play(stationManager.current().url.c_str());
-      displayShow(stationManager.current().name.c_str());
+    stationManager.next();
+    audioPlayer.play(stationManager.current().url.c_str());
+
+    refreshDisplay();
   }
 }
