@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 #include <AudioPlayer.h>
 #include <Display.h>
+#include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
 #include <StationManager.h>
 #include <WiFiManager.h>
@@ -11,6 +12,7 @@
 StationManager stationManager = StationManager();
 AudioPlayer audioPlayer = AudioPlayer(I2S_BCLK, I2S_LRC, I2S_DIN);
 Display display = Display();
+AsyncWebServer server(80);
 
 void refreshDisplay() {
   display.clear();
@@ -64,10 +66,15 @@ void setup() {
 
   configTime(TIMEZONE * 3600, 0, "pool.ntp.org");
 
+  server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
+
+  server.begin();
   stationManager.loadFromFile("/stations.json");
   audioPlayer.play(stationManager.current().url.c_str());
 
   refreshDisplay();
+
+  Serial.println(WiFi.localIP());
 }
 
 void loop() {
