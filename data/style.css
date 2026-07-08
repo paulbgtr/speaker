@@ -1,0 +1,122 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #14141a;
+    color: #f0f0f0;
+    margin: 0;
+    padding: 24px 16px;
+}
+
+main {
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 20px;
+    margin: 0 0 4px;
+}
+
+.subtitle {
+    color: #8a8a94;
+    font-size: 13px;
+    margin: 0 0 24px;
+}
+
+section {
+    margin-bottom: 28px;
+}
+
+h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #8a8a94;
+    margin: 0 0 10px;
+}
+
+.station-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #1e1e26;
+}
+
+.station-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid #2a2a33;
+}
+
+.station-list li:last-child {
+    border-bottom: none;
+}
+
+.station-name {
+    font-size: 14px;
+}
+
+.station-url {
+    font-size: 12px;
+    color: #8a8a94;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 220px;
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+    color: #e0637a;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 0 0 12px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #1e1e26;
+    padding: 14px;
+    border-radius: 8px;
+}
+
+label {
+    font-size: 12px;
+    color: #8a8a94;
+}
+
+input {
+    background: #14141a;
+    border: 1px solid #2a2a33;
+    color: #f0f0f0;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #5a5aff;
+}
+
+button[type="submit"] {
+    background: #5a5aff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+}

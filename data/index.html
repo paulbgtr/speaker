@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>LoFi Speaker</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <main>
+            <h1>LoFi Speaker</h1>
+            <p class="subtitle">Manage your radio stations</p>
+
+            <section>
+                <h2>Stations</h2>
+                <ul class="station-list">
+                    <li>
+                        <div>
+                            <div class="station-name">Fluid</div>
+                            <div class="station-url">
+                                http://ice3.somafm.com/fluid-128-mp3
+                            </div>
+                        </div>
+                        <button class="remove-btn" title="Remove">
+                            &times;
+                        </button>
+                    </li>
+                    <li>
+                        <div>
+                            <div class="station-name">Groove Salad</div>
+                            <div class="station-url">
+                                http://ice1.somafm.com/groovesalad-128-mp3
+                            </div>
+                        </div>
+                        <button class="remove-btn" title="Remove">
+                            &times;
+                        </button>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Add station</h2>
+                <form>
+                    <label for="name">Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Station name"
+                    />
+
+                    <label for="url">Stream URL</label>
+                    <input
+                        type="text"
+                        id="url"
+                        name="url"
+                        placeholder="http://..."
+                    />
+
+                    <button type="submit">Add station</button>
+                </form>
+            </section>
+        </main>
+    </body>
+</html>
