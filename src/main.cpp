@@ -1,3 +1,4 @@
+#include "ArduinoJson/Array/JsonArray.hpp"
 #include "HWCDC.h"
 #include "config.h"
 #include <Arduino.h>
@@ -67,6 +68,25 @@ void setup() {
   configTime(TIMEZONE * 3600, 0, "pool.ntp.org");
 
   server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
+
+  server.on("/stations", AsyncWebRequestMethod::HTTP_GET,
+            [](AsyncWebServerRequest *request) {
+              std::vector<Station> stations = stationManager.getStations();
+
+              JsonDocument doc;
+              JsonArray arr = doc.to<JsonArray>();
+
+              for (const Station &station : stations) {
+                JsonObject obj = arr.add<JsonObject>();
+                obj["name"] = station.name;
+                obj["url"] = station.url;
+              }
+
+              AsyncResponseStream *response =
+                  request->beginResponseStream("application/json");
+              serializeJson(doc, *response);
+              request->send(response);
+            });
 
   server.begin();
   stationManager.loadFromFile("/stations.json");
