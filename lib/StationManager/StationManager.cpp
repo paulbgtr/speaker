@@ -44,3 +44,7 @@ Station StationManager::current() {
 
   return stations_[currentIndex_];
 }
+
+std::vector<Station> &StationManager::getStations() {
+    return stations_;
+}
