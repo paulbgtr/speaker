@@ -1,9 +1,10 @@
 #include "StationManager.h"
+#include "FS.h"
 
 StationManager::StationManager() { currentIndex_ = 0; }
 
 bool StationManager::loadFromFile(const char *path) {
-  File file = LittleFS.open(path, "r");
+  File file = LittleFS.open(path, FILE_READ);
   if (!file) {
     Serial.println("no file");
     return false;
@@ -45,6 +46,30 @@ Station StationManager::current() {
   return stations_[currentIndex_];
 }
 
-std::vector<Station> &StationManager::getStations() {
-    return stations_;
+void StationManager::addStation(const char *name, const char *url) {
+  stations_.push_back({name, url});
 }
+
+bool StationManager::saveToFile(const char *path) {
+  File file = LittleFS.open(path, FILE_WRITE);
+
+  JsonDocument doc;
+  JsonArray arr =
+      doc["stations"].to<JsonArray>();
+
+  for (const Station &station : stations_) {
+    JsonObject obj = arr.add<JsonObject>();
+    obj["name"] = station.name;
+    obj["url"] = station.url;
+  }
+
+  if (serializeJson(doc, file) == 0) {
+    file.close();
+    return false;
+  }
+
+  file.close();
+  return true;
+}
+
+std::vector<Station> &StationManager::getStations() { return stations_; }
