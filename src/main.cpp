@@ -3,6 +3,7 @@
 #include "config.h"
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include <AsyncJson.h>
 #include <AudioPlayer.h>
 #include <Display.h>
 #include <ESPAsyncWebServer.h>
@@ -88,13 +89,31 @@ void setup() {
               request->send(response);
             });
 
+  AsyncCallbackJsonWebHandler *handler = new AsyncCallbackJsonWebHandler(
+      "/stations", [](AsyncWebServerRequest *request, JsonVariant &json) {
+        JsonObject data = json.as<JsonObject>();
+        const char *name = data["name"];
+        const char *url = data["url"];
+
+        if (!name || !url) {
+          request->send(400, "application/json",
+                        "{\"error\":\"missing fields\"}");
+          return;
+        }
+
+        stationManager.addStation(name, url);
+        stationManager.saveToFile("/stations.json");
+
+        request->send(200, "application/json", "{\"ok\":true}");
+      });
+  handler->setMethod(AsyncWebRequestMethod::HTTP_POST);
+  server.addHandler(handler);
+
   server.begin();
   stationManager.loadFromFile("/stations.json");
   audioPlayer.play(stationManager.current().url.c_str());
 
   refreshDisplay();
-
-  Serial.println(WiFi.localIP());
 }
 
 void loop() {
