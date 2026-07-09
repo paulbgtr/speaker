@@ -3,6 +3,7 @@
 #include <ArduinoJson.h>
 #include <LittleFS.h>
 #include <vector>
+#include <optional>
 
 struct Station {
   String name;
@@ -20,6 +21,7 @@ public:
   bool saveToFile(const char* path);
 
   std::vector<Station> &getStations();
+  std::optional<Station> deleteStation(size_t index);
 
 private:
   std::vector<Station> stations_;

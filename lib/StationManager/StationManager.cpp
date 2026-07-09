@@ -54,8 +54,7 @@ bool StationManager::saveToFile(const char *path) {
   File file = LittleFS.open(path, FILE_WRITE);
 
   JsonDocument doc;
-  JsonArray arr =
-      doc["stations"].to<JsonArray>();
+  JsonArray arr = doc["stations"].to<JsonArray>();
 
   for (const Station &station : stations_) {
     JsonObject obj = arr.add<JsonObject>();
@@ -73,3 +72,14 @@ bool StationManager::saveToFile(const char *path) {
 }
 
 std::vector<Station> &StationManager::getStations() { return stations_; }
+
+std::optional<Station> StationManager::deleteStation(size_t index) {
+  if (index >= stations_.size()) {
+    return std::nullopt;
+  }
+
+  Station deleted = stations_[index];
+
+  stations_.erase(stations_.begin() + index);
+  return deleted;
+}
