@@ -109,6 +109,29 @@ void setup() {
   handler->setMethod(AsyncWebRequestMethod::HTTP_POST);
   server.addHandler(handler);
 
+  server.on("/stations", AsyncWebRequestMethod::HTTP_DELETE,
+            [](AsyncWebServerRequest *request) {
+              if (!request->hasParam("index")) {
+                request->send(400, "application/json",
+                              "{\"error\":\"missing index\"}");
+                return;
+              }
+
+              String index = request->getParam("index")->value();
+
+              auto deleted = stationManager.deleteStation(index.toInt());
+
+              if (!deleted.has_value()) {
+                request->send(404, "application/json",
+                              "{\"error\":\"invalid index\"}");
+                return;
+              }
+
+              stationManager.saveToFile("/stations.json");
+
+              request->send(200, "application/json", "{\"ok\":true}");
+            });
+
   server.begin();
   stationManager.loadFromFile("/stations.json");
   audioPlayer.play(stationManager.current().url.c_str());
