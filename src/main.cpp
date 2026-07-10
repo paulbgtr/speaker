@@ -10,12 +10,14 @@
 #include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
 #include <StationManager.h>
+#include <StationServer.h>
 #include <WiFiManager.h>
 
 StationManager stationManager = StationManager();
 AudioPlayer audioPlayer = AudioPlayer(I2S_BCLK, I2S_LRC, I2S_DIN);
 Display display = Display();
 AsyncWebServer server(80);
+StationServer stationServer(server, stationManager);
 
 void refreshDisplay() {
   display.clear();
@@ -69,106 +71,109 @@ void setup() {
 
   configTime(TIMEZONE * 3600, 0, "pool.ntp.org");
 
-  server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
+  // server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
 
-  server.on("/stations", AsyncWebRequestMethod::HTTP_GET,
-            [](AsyncWebServerRequest *request) {
-              std::vector<Station> stations = stationManager.getStations();
+  // server.on("/stations", AsyncWebRequestMethod::HTTP_GET,
+  //           [](AsyncWebServerRequest *request) {
+  //             std::vector<Station> stations = stationManager.getStations();
 
-              JsonDocument doc;
-              JsonArray arr = doc.to<JsonArray>();
+  //             JsonDocument doc;
+  //             JsonArray arr = doc.to<JsonArray>();
 
-              for (const Station &station : stations) {
-                JsonObject obj = arr.add<JsonObject>();
-                obj["name"] = station.name;
-                obj["url"] = station.url;
-              }
+  //             for (const Station &station : stations) {
+  //               JsonObject obj = arr.add<JsonObject>();
+  //               obj["name"] = station.name;
+  //               obj["url"] = station.url;
+  //             }
 
-              AsyncResponseStream *response =
-                  request->beginResponseStream("application/json");
-              serializeJson(doc, *response);
-              request->send(response);
-            });
+  //             AsyncResponseStream *response =
+  //                 request->beginResponseStream("application/json");
+  //             serializeJson(doc, *response);
+  //             request->send(response);
+  //           });
 
-  AsyncCallbackJsonWebHandler *handler = new AsyncCallbackJsonWebHandler(
-      "/stations", [](AsyncWebServerRequest *request, JsonVariant &json) {
-        JsonObject data = json.as<JsonObject>();
-        const char *name = data["name"];
-        const char *url = data["url"];
+  // AsyncCallbackJsonWebHandler *handler = new AsyncCallbackJsonWebHandler(
+  //     "/stations", [](AsyncWebServerRequest *request, JsonVariant &json) {
+  //       JsonObject data = json.as<JsonObject>();
+  //       const char *name = data["name"];
+  //       const char *url = data["url"];
 
-        if (!name || !url) {
-          request->send(400, "application/json",
-                        "{\"error\":\"missing fields\"}");
-          return;
-        }
+  //       if (!name || !url) {
+  //         request->send(400, "application/json",
+  //                       "{\"error\":\"missing fields\"}");
+  //         return;
+  //       }
 
-        stationManager.addStation(name, url);
-        stationManager.saveToFile("/stations.json");
+  //       stationManager.addStation(name, url);
+  //       stationManager.saveToFile("/stations.json");
 
-        request->send(200, "application/json", "{\"ok\":true}");
-      });
-  handler->setMethod(AsyncWebRequestMethod::HTTP_POST);
-  server.addHandler(handler);
+  //       request->send(200, "application/json", "{\"ok\":true}");
+  //     });
+  // handler->setMethod(AsyncWebRequestMethod::HTTP_POST);
+  // server.addHandler(handler);
 
-  server.on("/stations", AsyncWebRequestMethod::HTTP_DELETE,
-            [](AsyncWebServerRequest *request) {
-              if (!request->hasParam("index")) {
-                request->send(400, "application/json",
-                              "{\"error\":\"missing index\"}");
-                return;
-              }
+  // server.on("/stations", AsyncWebRequestMethod::HTTP_DELETE,
+  //           [](AsyncWebServerRequest *request) {
+  //             if (!request->hasParam("index")) {
+  //               request->send(400, "application/json",
+  //                             "{\"error\":\"missing index\"}");
+  //               return;
+  //             }
 
-              String index = request->getParam("index")->value();
+  //             String index = request->getParam("index")->value();
 
-              auto deleted = stationManager.deleteStation(index.toInt());
+  //             auto deleted = stationManager.deleteStation(index.toInt());
 
-              if (!deleted.has_value()) {
-                request->send(404, "application/json",
-                              "{\"error\":\"invalid index\"}");
-                return;
-              }
+  //             if (!deleted.has_value()) {
+  //               request->send(404, "application/json",
+  //                             "{\"error\":\"invalid index\"}");
+  //               return;
+  //             }
 
-              stationManager.saveToFile("/stations.json");
+  //             stationManager.saveToFile("/stations.json");
 
-              request->send(200, "application/json", "{\"ok\":true}");
-            });
+  //             request->send(200, "application/json", "{\"ok\":true}");
+  //           });
 
-  AsyncCallbackJsonWebHandler *updateHandler = new AsyncCallbackJsonWebHandler(
-      "/stations", [](AsyncWebServerRequest *request, JsonVariant &json) {
-        if (!request->hasParam("index")) {
-          request->send(400, "application/json",
-                        "{\"error\":\"missing index\"}");
-          return;
-        }
+  // AsyncCallbackJsonWebHandler *updateHandler = new AsyncCallbackJsonWebHandler(
+  //     "/stations", [](AsyncWebServerRequest *request, JsonVariant &json) {
+  //       if (!request->hasParam("index")) {
+  //         request->send(400, "application/json",
+  //                       "{\"error\":\"missing index\"}");
+  //         return;
+  //       }
 
-        String index = request->getParam("index")->value();
+  //       String index = request->getParam("index")->value();
 
-        JsonObject data = json.as<JsonObject>();
-        const char *name = data["name"];
-        const char *url = data["url"];
+  //       JsonObject data = json.as<JsonObject>();
+  //       const char *name = data["name"];
+  //       const char *url = data["url"];
 
-        if (!name && !url) {
-          request->send(400, "application/json",
-                        "{\"error\":\"nothing to update\"}");
-          return;
-        }
+  //       if (!name && !url) {
+  //         request->send(400, "application/json",
+  //                       "{\"error\":\"nothing to update\"}");
+  //         return;
+  //       }
 
-        auto updated = stationManager.updateStation(index.toInt(), name, url);
+  //       auto updated = stationManager.updateStation(index.toInt(), name, url);
 
-        if (!updated.has_value()) {
-          request->send(404, "application/json",
-                        "{\"error\":\"invalid index\"}");
-          return;
-        }
+  //       if (!updated.has_value()) {
+  //         request->send(404, "application/json",
+  //                       "{\"error\":\"invalid index\"}");
+  //         return;
+  //       }
 
-        stationManager.saveToFile("/stations.json");
-        request->send(200, "application/json", "{\"ok\":true}");
-      });
+  //       stationManager.saveToFile("/stations.json");
+  //       request->send(200, "application/json", "{\"ok\":true}");
+  //     });
 
-  updateHandler->setMethod(AsyncWebRequestMethod::HTTP_PATCH);
-  server.addHandler(updateHandler);
+  // updateHandler->setMethod(AsyncWebRequestMethod::HTTP_PATCH);
+  // server.addHandler(updateHandler);
 
-  server.begin();
+  // server.begin();
+
+  stationServer.begin();
+
   stationManager.loadFromFile("/stations.json");
   audioPlayer.play(stationManager.current().url.c_str());
 
