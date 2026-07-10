@@ -147,9 +147,9 @@ void setup() {
         const char *name = data["name"];
         const char *url = data["url"];
 
-        if (!name || !url) {
+        if (!name && !url) {
           request->send(400, "application/json",
-                        "{\"error\":\"missing fields\"}");
+                        "{\"error\":\"nothing to update\"}");
           return;
         }
 
@@ -165,7 +165,7 @@ void setup() {
         request->send(200, "application/json", "{\"ok\":true}");
       });
 
-  updateHandler->setMethod(AsyncWebRequestMethod::HTTP_PUT);
+  updateHandler->setMethod(AsyncWebRequestMethod::HTTP_PATCH);
   server.addHandler(updateHandler);
 
   server.begin();

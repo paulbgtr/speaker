@@ -92,8 +92,13 @@ StationManager::updateStation(size_t index, const char *name, const char *url) {
 
   Station &updated = stations_[index];
 
-  updated.name = name;
-  updated.url = url;
+  if (name != nullptr) {
+      updated.name = name;
+  }
+
+  if (url != nullptr) {
+      updated.url = url;
+  }
 
   return updated;
 };
