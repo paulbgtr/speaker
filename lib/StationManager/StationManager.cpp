@@ -83,3 +83,17 @@ std::optional<Station> StationManager::deleteStation(size_t index) {
   stations_.erase(stations_.begin() + index);
   return deleted;
 }
+
+std::optional<Station>
+StationManager::updateStation(size_t index, const char *name, const char *url) {
+  if (index >= stations_.size()) {
+    return std::nullopt;
+  }
+
+  Station &updated = stations_[index];
+
+  updated.name = name;
+  updated.url = url;
+
+  return updated;
+};
