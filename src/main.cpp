@@ -1,4 +1,5 @@
 #include "ArduinoJson/Array/JsonArray.hpp"
+#include "ArduinoJson/Object/JsonObject.hpp"
 #include "HWCDC.h"
 #include "config.h"
 #include <Arduino.h>
@@ -131,6 +132,41 @@ void setup() {
 
               request->send(200, "application/json", "{\"ok\":true}");
             });
+
+  AsyncCallbackJsonWebHandler *updateHandler = new AsyncCallbackJsonWebHandler(
+      "/stations", [](AsyncWebServerRequest *request, JsonVariant &json) {
+        if (!request->hasParam("index")) {
+          request->send(400, "application/json",
+                        "{\"error\":\"missing index\"}");
+          return;
+        }
+
+        String index = request->getParam("index")->value();
+
+        JsonObject data = json.as<JsonObject>();
+        const char *name = data["name"];
+        const char *url = data["url"];
+
+        if (!name || !url) {
+          request->send(400, "application/json",
+                        "{\"error\":\"missing fields\"}");
+          return;
+        }
+
+        auto updated = stationManager.updateStation(index.toInt(), name, url);
+
+        if (!updated.has_value()) {
+          request->send(404, "application/json",
+                        "{\"error\":\"invalid index\"}");
+          return;
+        }
+
+        stationManager.saveToFile("/stations.json");
+        request->send(200, "application/json", "{\"ok\":true}");
+      });
+
+  updateHandler->setMethod(AsyncWebRequestMethod::HTTP_PUT);
+  server.addHandler(updateHandler);
 
   server.begin();
   stationManager.loadFromFile("/stations.json");
