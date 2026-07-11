@@ -1,26 +1,32 @@
 {
   "stations": [
     {
+      "id": 0,
       "name": "Fluid",
       "url": "http://ice3.somafm.com/fluid-128-mp3"
     },
     {
+      "id": 1,
       "name": "Groove Salad",
       "url": "http://ice1.somafm.com/groovesalad-128-mp3"
     },
     {
+      "id": 2,
       "name": "Drone Zone",
       "url": "http://ice1.somafm.com/dronezone-128-mp3"
     },
     {
+      "id": 3,
       "name": "Indie Pop",
       "url": "http://ice1.somafm.com/indiepop-128-mp3"
     },
     {
+      "id": 4,
       "name": "Metal",
       "url": "http://ice1.somafm.com/metal-128-mp3"
     },
     {
+      "id": 5,
       "name": "Dubstep",
       "url": "http://ice1.somafm.com/dubstep-128-mp3"
     }
