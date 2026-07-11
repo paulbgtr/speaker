@@ -13,30 +13,8 @@
 
             <section>
                 <h2>Stations</h2>
-                <ul class="station-list">
-                    <li>
-                        <div>
-                            <div class="station-name">Fluid</div>
-                            <div class="station-url">
-                                http://ice3.somafm.com/fluid-128-mp3
-                            </div>
-                        </div>
-                        <button class="remove-btn" title="Remove">
-                            &times;
-                        </button>
-                    </li>
-                    <li>
-                        <div>
-                            <div class="station-name">Groove Salad</div>
-                            <div class="station-url">
-                                http://ice1.somafm.com/groovesalad-128-mp3
-                            </div>
-                        </div>
-                        <button class="remove-btn" title="Remove">
-                            &times;
-                        </button>
-                    </li>
-                </ul>
+
+                <ul id="stations" class="station-list"></ul>
             </section>
 
             <section>
@@ -55,12 +33,14 @@
                         type="text"
                         id="url"
                         name="url"
-                        placeholder="http://..."
+                        placeholder="http://lofi-speaker.local/stations"
                     />
 
                     <button type="submit">Add station</button>
                 </form>
             </section>
         </main>
+
+        <script src="script.js"></script>
     </body>
 </html>
