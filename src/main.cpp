@@ -10,6 +10,7 @@
 #include <StationManager.h>
 #include <StationServer.h>
 #include <WiFiManager.h>
+#include <ESPmDNS.h>
 
 StationManager stationManager = StationManager();
 AudioPlayer audioPlayer = AudioPlayer(I2S_BCLK, I2S_LRC, I2S_DIN);
@@ -66,6 +67,12 @@ void setup() {
 
   Serial.println("WiFi connected!");
   Serial.println(WiFi.localIP());
+
+  if (!MDNS.begin("lofi-speaker")) {
+    Serial.println("mDNS failed to start");
+  }
+
+  MDNS.addService("http", "tcp", 80);
 
   configTime(TIMEZONE * 3600, 0, "pool.ntp.org");
 
