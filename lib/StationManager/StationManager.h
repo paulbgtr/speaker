@@ -6,6 +6,7 @@
 #include <vector>
 
 struct Station {
+  int id;
   String name;
   String url;
 };
@@ -26,6 +27,7 @@ public:
                                        const char *url);
 
 private:
+  int nextId_;
   std::vector<Station> stations_;
   int currentIndex_;
 };

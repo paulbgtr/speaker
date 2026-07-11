@@ -1,7 +1,7 @@
 #include "StationManager.h"
 #include "FS.h"
 
-StationManager::StationManager() { currentIndex_ = 0; }
+StationManager::StationManager() { currentIndex_ = 0; nextId_ = 0; }
 
 bool StationManager::loadFromFile(const char *path) {
   File file = LittleFS.open(path, FILE_READ);
@@ -23,10 +23,22 @@ bool StationManager::loadFromFile(const char *path) {
 
   JsonArray stations = doc["stations"];
   for (JsonObject station : stations) {
+    int id = station["id"] | -1;
     const char *name = station["name"];
     const char *url = station["url"];
 
-    stations_.push_back({name, url});
+    if (id == -1) id = nextId_++;
+
+    stations_.push_back({id, name, url});
+  }
+
+  if (doc["nextId"].is<int>()) {
+    nextId_ = doc["nextId"];
+  } else {
+    for (const Station &station : stations_) {
+      if (station.id >= nextId_)
+        nextId_ = station.id + 1;
+    }
   }
 
   return true;
@@ -47,17 +59,20 @@ Station StationManager::current() {
 }
 
 void StationManager::addStation(const char *name, const char *url) {
-  stations_.push_back({name, url});
+  stations_.push_back({nextId_, name, url});
+  nextId_++;
 }
 
 bool StationManager::saveToFile(const char *path) {
   File file = LittleFS.open(path, FILE_WRITE);
 
   JsonDocument doc;
+  doc["nextId"] = nextId_;
   JsonArray arr = doc["stations"].to<JsonArray>();
 
   for (const Station &station : stations_) {
     JsonObject obj = arr.add<JsonObject>();
+    obj["id"] = station.id;
     obj["name"] = station.name;
     obj["url"] = station.url;
   }
@@ -93,11 +108,11 @@ StationManager::updateStation(size_t index, const char *name, const char *url) {
   Station &updated = stations_[index];
 
   if (name != nullptr) {
-      updated.name = name;
+    updated.name = name;
   }
 
   if (url != nullptr) {
-      updated.url = url;
+    updated.url = url;
   }
 
   return updated;
