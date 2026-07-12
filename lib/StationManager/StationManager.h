@@ -22,8 +22,8 @@ public:
 
   std::vector<Station> &getStations();
   void addStation(const char *name, const char *url);
-  std::optional<Station> deleteStation(size_t index);
-  std::optional<Station> updateStation(size_t index, const char *name,
+  std::optional<Station> deleteStation(int id);
+  std::optional<Station> updateStation(int id, const char *name,
                                        const char *url);
 
 private:

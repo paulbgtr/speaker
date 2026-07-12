@@ -1,7 +1,11 @@
 #include "StationManager.h"
 #include "FS.h"
+#include <optional>
 
-StationManager::StationManager() { currentIndex_ = 0; nextId_ = 0; }
+StationManager::StationManager() {
+  currentIndex_ = 0;
+  nextId_ = 0;
+}
 
 bool StationManager::loadFromFile(const char *path) {
   File file = LittleFS.open(path, FILE_READ);
@@ -27,7 +31,8 @@ bool StationManager::loadFromFile(const char *path) {
     const char *name = station["name"];
     const char *url = station["url"];
 
-    if (id == -1) id = nextId_++;
+    if (id == -1)
+      id = nextId_++;
 
     stations_.push_back({id, name, url});
   }
@@ -88,32 +93,33 @@ bool StationManager::saveToFile(const char *path) {
 
 std::vector<Station> &StationManager::getStations() { return stations_; }
 
-std::optional<Station> StationManager::deleteStation(size_t index) {
-  if (index >= stations_.size()) {
+std::optional<Station> StationManager::deleteStation(int id) {
+  auto it = std::find_if(stations_.begin(), stations_.end(),
+                         [id](const Station &s) { return s.id == id; });
+
+  if (it == stations_.end()) {
     return std::nullopt;
   }
 
-  Station deleted = stations_[index];
-
-  stations_.erase(stations_.begin() + index);
+  Station deleted = *it;
+  stations_.erase(it);
   return deleted;
 }
 
-std::optional<Station>
-StationManager::updateStation(size_t index, const char *name, const char *url) {
-  if (index >= stations_.size()) {
+std::optional<Station> StationManager::updateStation(int id, const char *name,
+                                                     const char *url) {
+  auto it = std::find_if(stations_.begin(), stations_.end(),
+                         [id](const Station &s) { return s.id == id; });
+
+  if (it == stations_.end()) {
     return std::nullopt;
   }
 
-  Station &updated = stations_[index];
+  if (name != nullptr)
+    it->name = name;
 
-  if (name != nullptr) {
-    updated.name = name;
-  }
+  if (url != nullptr)
+    it->url = url;
 
-  if (url != nullptr) {
-    updated.url = url;
-  }
-
-  return updated;
+  return *it;
 };
