@@ -16,6 +16,7 @@ void StationServer::initEndpoints() {
 
                for (const Station &station : stations) {
                  JsonObject obj = arr.add<JsonObject>();
+                 obj["id"] = station.id;
                  obj["name"] = station.name;
                  obj["url"] = station.url;
                }
