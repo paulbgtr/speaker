@@ -43,3 +43,19 @@ pio run -t uploadfs          # flash data/ to LittleFS
 ```
 
 On first boot, connect to the `LoFi-Speaker-Setup` WiFi network to configure your home WiFi. Once connected, manage stations at `http://lofi-speaker.local`.
+
+## TODO
+
+**UI/polish**
+- [ ] "Cancel edit" button (currently the only way out of edit mode without submitting is refreshing)
+- [ ] Confirmation before deleting a station
+- [ ] Error handling on `fetch()` calls in `script.js` (currently fails silently if the device is unreachable)
+
+**Real features**
+- [ ] Persist last-played station and volume across reboot
+- [ ] Reconnect/retry when a stream drops mid-playback
+- [ ] Volume control (currently fixed at construction time)
+
+**Bigger**
+- [ ] WiFi reset (long-press a button to call `wifiManager.resetSettings()`, for reconfiguring without reflashing)
+- [ ] OTA firmware updates (avoid needing a USB connection for every change)
