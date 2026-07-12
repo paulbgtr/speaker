@@ -1,4 +1,5 @@
 let stations = [];
+let editingId = null;
 
 const fetchStations = async () => {
   const res = await fetch("http://lofi-speaker.local/stations");
@@ -15,6 +16,17 @@ const removeStation = async (id) => {
   fetchStations();
 };
 
+const editStation = (id) => {
+  const station = stations.find((s) => s.id === id);
+  if (!station) return;
+
+  editingId = id;
+  addStationForm.elements["name"].value = station.name;
+  addStationForm.elements["url"].value = station.url;
+
+  document.getElementById("submit-btn").textContent = "Update station";
+};
+
 const render = () => {
   const container = document.getElementById("stations");
 
@@ -28,7 +40,10 @@ const render = () => {
               ${s.url}
             </div>
         </div>
-        <button class="remove-btn" title="Remove" onclick=removeStation(${s.id})>
+        <button class="edit-btn" title="Edit" onclick="editStation(${s.id})">
+            edit
+        </button>
+        <button class="remove-btn" title="Remove" onclick="removeStation(${s.id})">
             &times;
         </button>
     </li>
@@ -45,11 +60,21 @@ addStationForm.addEventListener("submit", async (e) => {
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
 
-  await fetch("http://lofi-speaker.local/stations", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  if (editingId !== null) {
+    await fetch("http://lofi-speaker.local/stations" + `?id=${editingId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    editingId = null;
+    document.getElementById("submit-btn").textContent = "Add station";
+  } else {
+    await fetch("http://lofi-speaker.local/stations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  }
 
   fetchStations();
   e.target.reset();
