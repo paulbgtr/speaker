@@ -4,8 +4,15 @@ const fetchStations = async () => {
   const res = await fetch("http://lofi-speaker.local/stations");
 
   stations = await res.json();
-  console.log(stations);
   render();
+};
+
+const removeStation = async (id) => {
+  await fetch("http://lofi-speaker.local/stations" + `?id=${id}`, {
+    method: "DELETE",
+  });
+
+  fetchStations();
 };
 
 const render = () => {
@@ -21,7 +28,7 @@ const render = () => {
               ${s.url}
             </div>
         </div>
-        <button class="remove-btn" title="Remove">
+        <button class="remove-btn" title="Remove" onclick=removeStation(${s.id})>
             &times;
         </button>
     </li>
