@@ -49,19 +49,19 @@ void StationServer::initEndpoints() {
 
   server_.on("/stations", AsyncWebRequestMethod::HTTP_DELETE,
              [this](AsyncWebServerRequest *request) {
-               if (!request->hasParam("index")) {
+               if (!request->hasParam("id")) {
                  request->send(400, "application/json",
-                               "{\"error\":\"missing index\"}");
+                               "{\"error\":\"missing id\"}");
                  return;
                }
 
-               String index = request->getParam("index")->value();
+               String id = request->getParam("id")->value();
 
-               auto deleted = stationManager_.deleteStation(index.toInt());
+               auto deleted = stationManager_.deleteStation(id.toInt());
 
                if (!deleted.has_value()) {
                  request->send(404, "application/json",
-                               "{\"error\":\"invalid index\"}");
+                               "{\"error\":\"invalid id\"}");
                  return;
                }
 
@@ -72,13 +72,13 @@ void StationServer::initEndpoints() {
 
   AsyncCallbackJsonWebHandler *updateHandler = new AsyncCallbackJsonWebHandler(
       "/stations", [this](AsyncWebServerRequest *request, JsonVariant &json) {
-        if (!request->hasParam("index")) {
+        if (!request->hasParam("id")) {
           request->send(400, "application/json",
-                        "{\"error\":\"missing index\"}");
+                        "{\"error\":\"missing id\"}");
           return;
         }
 
-        String index = request->getParam("index")->value();
+        String id = request->getParam("id")->value();
 
         JsonObject data = json.as<JsonObject>();
         const char *name = data["name"];
@@ -90,11 +90,11 @@ void StationServer::initEndpoints() {
           return;
         }
 
-        auto updated = stationManager_.updateStation(index.toInt(), name, url);
+        auto updated = stationManager_.updateStation(id.toInt(), name, url);
 
         if (!updated.has_value()) {
           request->send(404, "application/json",
-                        "{\"error\":\"invalid index\"}");
+                        "{\"error\":\"invalid id\"}");
           return;
         }
 
