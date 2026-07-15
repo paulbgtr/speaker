@@ -35,25 +35,26 @@ void refreshDisplay() {
 
 template <typename ShortF, typename LongF>
 void handleButtonPress(int buttonPin, bool &isPressed, unsigned long &pressTime,
-                       ShortF shortPress, LongF longPress) {
+                       unsigned long &lastDebounceTime, ShortF shortPress,
+                       LongF longPress) {
   bool currentState = digitalRead(buttonPin) == LOW;
 
-  if (currentState && !isPressed) {
-    delay(debounceDelay);
-
-    if (digitalRead(buttonPin) == LOW) {
+  if (millis() - lastDebounceTime > debounceDelay) {
+    if (currentState && !isPressed) {
+      lastDebounceTime = millis();
       pressTime = millis();
       isPressed = true;
-    }
-  } else if (!currentState && isPressed) {
-    unsigned long duration = millis() - pressTime;
+    } else if (!currentState && isPressed) {
+      lastDebounceTime = millis();
+      isPressed = false;
+      unsigned long duration = millis() - pressTime;
 
-    if (duration >= longPressThreshold) {
-      longPress();
-    } else {
-      shortPress();
+      if (duration >= longPressThreshold) {
+        longPress();
+      } else {
+        shortPress();
+      }
     }
-    isPressed = false;
   }
 }
 
@@ -111,16 +112,18 @@ void loop() {
 
   static bool playPressed = false;
   static unsigned long playPressTime = 0;
+  static unsigned long lastPlayDebounce = 0;
   static bool nextPressed = false;
   static unsigned long nextPressTime = 0;
+  static unsigned long lastNextDebounce = 0;
 
   handleButtonPress(
-      CONTROLS_PLAY, playPressed, playPressTime,
+      CONTROLS_PLAY, playPressed, playPressTime, lastPlayDebounce,
       []() { audioPlayer.toggleAudio(); },
       []() { wifiManager.resetSettings(); });
 
   handleButtonPress(
-      CONTROLS_NEXT, nextPressed, nextPressTime,
+      CONTROLS_NEXT, nextPressed, nextPressTime, lastNextDebounce,
       []() {
         stationManager.next();
         audioPlayer.play(stationManager.current().url.c_str());
