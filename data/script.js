@@ -1,15 +1,18 @@
+const API_URL = "http://lofi-speaker.local/stations"
+
 let stations = [];
 let editingId = null;
 
+
 const fetchStations = async () => {
-  const res = await fetch("http://lofi-speaker.local/stations");
+  const res = await fetch(API_URL);
 
   stations = await res.json();
   render();
 };
 
 const removeStation = async (id) => {
-  await fetch("http://lofi-speaker.local/stations" + `?id=${id}`, {
+  await fetch(API_URL + `?id=${id}`, {
     method: "DELETE",
   });
 
