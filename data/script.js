@@ -1,8 +1,7 @@
-const API_URL = "http://lofi-speaker.local/stations"
+const API_URL = "http://lofi-speaker.local/stations";
 
 let stations = [];
 let editingId = null;
-
 
 const fetchStations = async () => {
   const res = await fetch(API_URL);
