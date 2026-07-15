@@ -25,6 +25,14 @@ const editStation = (id) => {
   addStationForm.elements["url"].value = station.url;
 
   document.getElementById("submit-btn").textContent = "Update station";
+  document.getElementById("cancel-btn").style.display = "inline-block";
+};
+
+const exitEditMode = () => {
+  editingId = null;
+  addStationForm.reset();
+  document.getElementById("submit-btn").textContent = "Add station";
+  document.getElementById("cancel-btn").style.display = "none";
 };
 
 const render = () => {
@@ -66,18 +74,19 @@ addStationForm.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    editingId = null;
-    document.getElementById("submit-btn").textContent = "Add station";
+    exitEditMode();
   } else {
     await fetch("http://lofi-speaker.local/stations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
+    e.target.reset();
   }
 
   fetchStations();
-  e.target.reset();
 });
+
+document.getElementById("cancel-btn").addEventListener("click", exitEditMode);
 
 fetchStations();

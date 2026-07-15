@@ -118,7 +118,7 @@ input:focus {
     border-color: #5a5aff;
 }
 
-button[type="submit"] {
+button {
     background: #5a5aff;
     color: #fff;
     border: none;
@@ -128,4 +128,8 @@ button[type="submit"] {
     font-weight: 600;
     cursor: pointer;
     margin-top: 4px;
+}
+
+#cancel-btn {
+    display: none;
 }
